@@ -82,17 +82,27 @@ async function volumeAnomaly(
   const growthPct = average > 0 ? ((latest.volume / average) - 1) * 100 : null;
   const triggered = growthPct !== null && growthPct >= thresholdPct;
 
-  return {
-    market,
-    interval,
-    latestClosedCandleStart: new Date(latest.timestamp).toISOString(),
-    latestClosedCandleEnd: new Date(latest.timestamp + INTERVAL_MS[interval]).toISOString(),
-    latestVolume: latest.volume,
-    averagePreviousVolumes: average,
-    growthPct,
-    thresholdPct,
-    triggered
-  };
+ const direction =
+  latest.close > latest.open
+    ? "bullish"
+    : latest.close < latest.open
+      ? "bearish"
+      : "neutral";
+
+return {
+  market,
+  interval,
+  latestClosedCandleStart: new Date(latest.timestamp).toISOString(),
+  latestClosedCandleEnd: new Date(latest.timestamp + INTERVAL_MS[interval]).toISOString(),
+  latestOpen: latest.open,
+  latestClose: latest.close,
+  direction,
+  latestVolume: latest.volume,
+  averagePreviousVolumes: average,
+  growthPct,
+  thresholdPct,
+  triggered
+};
 }
 
 const server = new McpServer({
